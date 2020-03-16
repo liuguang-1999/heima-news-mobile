@@ -1,9 +1,11 @@
 <template>
-  <div>
-      <h1>
-          编辑资料组件
-      </h1>
-  </div>
+     <!-- 编辑资料 -->
+  <div class="container">
+      <!-- 头部导航栏 左箭头left-arrow -->
+      <van-nav-bar title="编辑资料"  left-arrow @click-left="$router.go(-1)" right-text="保存">
+
+      </van-nav-bar>
+      </div>
 </template>
 
 <script>

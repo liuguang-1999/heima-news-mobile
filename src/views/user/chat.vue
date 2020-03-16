@@ -1,8 +1,10 @@
 <template>
-  <div>
-      <h1>
-          小爱同学组件
-      </h1>
+    <!-- 小爱同学 -->
+  <div class="container">
+      <!-- 头部导航栏 左箭头left-arrow -->
+      <van-nav-bar title="小爱同学"  left-arrow @click-left="$router.go(-1)">
+
+      </van-nav-bar>
   </div>
 </template>
 

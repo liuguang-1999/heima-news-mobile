@@ -1,6 +1,9 @@
 <template>
-  <div>
-      <h1>搜索模块</h1>
+  <div class="container">
+      <!-- 头部导航栏 左箭头left-arrow -->
+      <van-nav-bar title="搜索中心"  left-arrow @click-left="$router.go(-1)">
+
+      </van-nav-bar>
   </div>
 </template>
 
