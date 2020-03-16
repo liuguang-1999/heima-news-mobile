@@ -5,7 +5,7 @@
 const WSER_TOKEN = 'heima-toutiao-mobile-94' // 用来存储用户信息
 
 // 设置用户的 token信息
-// 传入一个 user信息
+// 传入一个 user信息 存储
 export function setUser (user) {
   // user应该写成一个 对象形式
   window.localStorage.setItem(WSER_TOKEN, JSON.stringify(user)) // 通过 JSON.stringify(user) 转化成 json 字符串格式进行 存储token信息
