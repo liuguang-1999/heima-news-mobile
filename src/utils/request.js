@@ -32,5 +32,12 @@ instance.interceptors.request.use(function (config) {
   return Promise.reject(error) // 提示错误
 })
 
+// 相应拦截器 去处理返回的数据
+instance.interceptors.response.use(function (response) {
+  // axios 默认给我们加了一层 data 包裹层  我们可以通过 相应拦截器 去扒掉一层data的包裹层 data本身自带了一层data包裹层我们还可以扒掉自带的包裹层  然后再返回给响应数据
+  return response.data.data ? response.data.data : response.data // 褪去2层 data的包裹层外壳  如果不成立 那就褪去一层  肯定能褪去一层data因为是axios默认包裹的data
+}, function (error) { // 失败时 执行的Promise 抛出错误代码
+  return Promise.reject(error) // 提示错误
+})
 // 常见了一个新实例之后  将这个新的实例 导出
 export default instance // 这个instance 拥有了 axios的所有方法 包括请求数据
