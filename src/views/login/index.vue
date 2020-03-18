@@ -21,13 +21,15 @@
 </template>
 
 <script>
+import { login } from '@/api/user.js'
+import { mapMutations } from 'vuex' // 辅助函数 可以把mutations方法映射到methods方法中
 export default {
   data () {
     return {
     // 表单数据
       loginFrom: {
         mobile: '13911111111', // 手机号
-        code: '666666' // 验证码
+        code: '246810' // 验证码
       },
       errorMessage: { // 定义一个 对象专门存放 错误消息
         mobile: '', // 手机号错误消息
@@ -36,6 +38,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['updataUser']),
     // 定义一个检查手机号的方法
     checkMobile () {
       // 获取手机号 校验是否为空
@@ -69,11 +72,23 @@ export default {
       return true
     },
     // 点击登陆时 手动校验表单
-    login () {
+    async login () {
       const validateMobile = this.checkMobile()
       const validateCode = this.checkCode()
       if (validateMobile && validateCode) {
-        console.log('校验通过')
+        // 当手机号 失败的时候 我们需要 捕获错误 用 try catch
+        try {
+          const ser = await login(this.loginFrom) // 调用接口 给接口传入 请求 参数
+          // Vuex 的简化写法 结构出一个方法
+          this.updataUser({ user: ser }) // 相当于 更新了 token 和 refresh_token
+          // 判断是否有新的跳转页面
+          const { redirectUrl } = this.$route.query // query 查询参数 也就是 ？ 后面的参数地址 里面有个 redirectUrl 地址变量 这个变量 也就是我要 跳转的地址
+          this.$router.push(redirectUrl || '/')
+          this.$notify({ type: 'success', message: '登陆成功', duration: 800 })
+        } catch (error) {
+          // 需要提示 捕获到的错误消息 告诉用户 登陆失败
+          this.$notify({ message: '登陆失败', duration: 800 })
+        }
       }
     }
   }
