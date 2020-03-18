@@ -14,7 +14,7 @@ export function setUser (user) {
 // 获取用户的 token 信息
 export function getUser () {
   // 返回一个 JSON对象 将JSON 字符串转化成一个 对象再返回出去
-  return JSON.parse(window.localStorage.getItem(WSER_TOKEN) ? window.localStorage.getItem(WSER_TOKEN) : {}) // 三元表达式 判断window.localStorage.getItem(WSER_TOKEN) 是否成立 不成立赋值一个空对象
+  return JSON.parse(window.localStorage.getItem(WSER_TOKEN) ? window.localStorage.getItem(WSER_TOKEN) : '{}') // 三元表达式 判断window.localStorage.getItem(WSER_TOKEN) 是否成立 不成立赋值一个空对象
 }
 
 // 删除用户的 token信息

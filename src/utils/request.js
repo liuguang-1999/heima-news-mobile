@@ -23,10 +23,9 @@ const instance = axios.create({ // 相当于 new了一个 新的axios的新实�
 
 // 请求拦截器 token 的注入  ! ! ! !
 instance.interceptors.request.use(function (config) {
-  if (!store.state.user.token) { // 伏笔`````` ! ! ! ! !
-    return // 如果 store.state.user.token 不成立 结束代码执行
+  if (store.state.user.token) {
+    config.headers.Authorization = `Bearer ${store.state.user.token}` // 注入统一的token处理 注入到请求头headers中
   }
-  config.headers.Authorization = `Bearer ${store.state.user.token}` // 注入统一的token处理 注入到请求头headers中
   return config // 将结果返回
 }, function (error) { // 失败时 执行的Promise 抛出错误代码
   return Promise.reject(error) // 提示错误
