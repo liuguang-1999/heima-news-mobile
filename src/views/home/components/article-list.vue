@@ -10,7 +10,7 @@
         <van-cell-group>
           <van-cell :title="`标题${item}`" value="内容" v-for="item in list" :key="item">
              <!-- item.art_id 此时是一个大数字的对象 v-for 的key需要用字符串或者数字代理 -->
-          <van-cell v-for="item in articles" :key="item.art_id.toString()">
+          <van-cell v-for="item in 1" :key="item.art_id.toString()">
             <!-- 放置元素 文章列表的循环项  无图  单图  三图 -->
             <div class="article_item">
               <!-- 标题 -->
@@ -48,13 +48,25 @@
 
 <script>
 export default {
+  // props:['channel_id'] // 字符串数组 接收方式 比较简单 比较low 易于上手 但! 还有更好的方放 除了用数组 还可以用 对象的形式
+  // props 以对象形式的形式 编写 可以约束传入的值 必填=>(没传入这个值 就会报错) 以及 传入值的类型
+  props: {
+    // key( props传过来的属性名 ) & value(对象 配置) 形式
+    channel_id: {
+      // 这里面有三个选项
+      required: true, // 这是个 必填项 此属性的含义是 如果参数为 true 要求该 props 必须传值
+      type: Number, // 表示 要传入的props属性的类型
+      default: null // 默认值的意思 假如你没有传入 props属性 你的默认值就会被采用 默认值给一个null 默认 没有 channel_id 的值
+    }
+  },
   data () {
     return {
       list: [], // 文章列表
       uploading: false, // 是否 开启了上拉加载 默认值 false
       finished: false, // 当前列表的  全部数据 是否加载完毕
       isLoading: false, // 下拉刷新加载 是否完成
-      successText: '' // 下拉刷新 成功提示信息
+      successText: '', // 下拉刷新 成功提示信息
+      timestamp: null // 定义一个时间戳属性 用来存储 上一个历史时间戳 初始化是没有 历史时间戳的 所以给一个空
     }
   },
   methods: {

@@ -12,7 +12,8 @@
           </van-cell-group>
         </div>-->
         <!-- ArticleList 组件替换了 上面整套流程 -->
-        <ArticleList></ArticleList>
+        <!-- 需要将频道 id item.id 传递给每一个列表组件 父传子=> props -->
+        <ArticleList :channel_id="item.id"></ArticleList>
       </van-tab>
     </van-tabs>
     <!-- 放置编辑频道 的字体图标 -->
