@@ -4,31 +4,45 @@
     <!-- 顶部 标签页 -->
     <van-tabs>
       <!-- 内部标签 -->
-      <van-tab :title="`标签${iten}`" v-for="(iten,index) in 10" :key="index">
+      <van-tab :title=" item.name " v-for="item in channels" :key="item.id">
         <!-- 单元格 -->
         <!-- <div class="scroll-wrapper">
           <van-cell-group>
             <van-cell title="标题" value="内容" v-for="item in 20" :key="item"></van-cell>
           </van-cell-group>
-        </div> -->
+        </div>-->
         <!-- ArticleList 组件替换了 上面整套流程 -->
-        <ArticleList>
-
-        </ArticleList>
+        <ArticleList></ArticleList>
       </van-tab>
     </van-tabs>
     <!-- 放置编辑频道 的字体图标 -->
     <span class="bar_btn">
-    <van-icon name="wap-nav" dot />
+      <van-icon name="wap-nav" dot />
     </span>
   </div>
 </template>
 
 <script>
+import { getMyChannels } from '@/api/channels.js'
 import ArticleList from './components/article-list'
 export default {
   components: {
     ArticleList
+  },
+  data () {
+    return {
+      channels: [] // 用来接收频道 数据
+    }
+  },
+  methods: {
+    // 定义接收频道数据 的方法
+    async getMyChannels () {
+      const ser = await getMyChannels()
+      this.channels = ser.channels // 将获取到的 数据 赋值给data中的 channels 数组
+    }
+  },
+  created () {
+    this.getMyChannels()
   }
 }
 </script>
