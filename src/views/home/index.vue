@@ -6,11 +6,15 @@
       <!-- 内部标签 -->
       <van-tab :title="`标签${iten}`" v-for="(iten,index) in 10" :key="index">
         <!-- 单元格 -->
-        <div class="scroll-wrapper">
+        <!-- <div class="scroll-wrapper">
           <van-cell-group>
             <van-cell title="标题" value="内容" v-for="item in 20" :key="item"></van-cell>
           </van-cell-group>
-        </div>
+        </div> -->
+        <!-- ArticleList 组件替换了 上面整套流程 -->
+        <ArticleList>
+
+        </ArticleList>
       </van-tab>
     </van-tabs>
     <!-- 放置编辑频道 的字体图标 -->
@@ -21,7 +25,12 @@
 </template>
 
 <script>
-export default {}
+import ArticleList from './components/article-list'
+export default {
+  components: {
+    ArticleList
+  }
+}
 </script>
 
 <style lang='less' scoped>
