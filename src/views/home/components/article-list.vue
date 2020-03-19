@@ -8,9 +8,9 @@
       <van-list v-model="uploading" :finished="finished" @load="onLoad" finished-text="数据加载完毕">
         <!-- 边框 -->
         <van-cell-group>
-          <van-cell :title="`标题${item}`" value="内容" v-for="item in list" :key="item">
-             <!-- item.art_id 此时是一个大数字的对象 v-for 的key需要用字符串或者数字代理 -->
-          <van-cell v-for="item in 1" :key="item.art_id.toString()">
+          <van-cell v-for="item in list" :key="item.art_id">
+             <!-- item.art_id 此时是一个大数字的对象 v-for 的key需要用字符串或者数字代理 v-for="item in 1" :key="item.art_id.toString()" -->
+          <van-cell >
             <!-- 放置元素 文章列表的循环项  无图  单图  三图 -->
             <div class="article_item">
               <!-- 标题 -->
@@ -47,6 +47,8 @@
 </template>
 
 <script>
+// 引入 获取推荐的方法
+import { getArticles } from '@/api/articles.js'
 export default {
   // props:['channel_id'] // 字符串数组 接收方式 比较简单 比较low 易于上手 但! 还有更好的方放 除了用数组 还可以用 对象的形式
   // props 以对象形式的形式 编写 可以约束传入的值 必填=>(没传入这个值 就会报错) 以及 传入值的类型
@@ -71,16 +73,30 @@ export default {
   },
   methods: {
     // 上拉加载
-    onLoad () {
-      if (this.list.length > 40) {
-        this.finished = true // 达到了 预期的数量就关闭 添加条数
+    async onLoad () {
+      // 开始加载 文章列表数据
+      //  if (this.list.length > 40) {
+      //   this.finished = true // 达到了 预期的数量就关闭 添加条数
+      // }
+      // const arr = Array.from(
+      //   Array(21),
+      //   (value, index) => this.list.length + index + 1
+      // )
+      // this.list.push(...arr) // 结构出来 添加到 list 这个数组里面去
+      // this.uploading = false // 数据 请求完毕 关闭 上拉加载
+      // timestamp: this.timestamp || Date.now() 如果有历史时间戳 用历史时间戳 没有就 new 一个当前的时间戳
+      const ser = await getArticles({ channel_id: this.channel_id, timestamp: this.timestamp || Date.now() }) // this.channel_id 指的是 当前 props 里的频道id  这里还需要传入一个时间戳
+      this.list.push(...ser.results) // 将数据追加到队列尾部
+      this.uploading = false // 关闭加载状态
+      // 还需要将 历史时间戳 给 data 中的 timestamp 但是 赋值之前需要判断一下 历史时间戳是否为0
+      // 如果历史时间戳 为0 说明 此时已经没有数据了 到这里就结束了 设置 finished 属性为 true 结束掉
+      if (ser.pre_timestamp) {
+        // 如果 有历史时间戳 表示 还有数据 可以继续进行加载
+        this.timestamp = ser.pre_timestamp
+      } else {
+        // 如果为0的话 表示结束了 没有数据可以请求了
+        this.finished = true
       }
-      const arr = Array.from(
-        Array(21),
-        (value, index) => this.list.length + index + 1
-      )
-      this.list.push(...arr) // 结构出来 添加到 list 这个数组里面去
-      this.uploading = false // 数据 请求完毕 关闭 上拉加载
     },
     // 下拉刷新
     onrefresh () {
