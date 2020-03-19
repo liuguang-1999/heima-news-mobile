@@ -1,0 +1,16 @@
+/**
+ *      处理 获取文章模块的获取数据请求
+ *      获取推荐文章
+ */
+// 引入网络请求 模块
+import request from '@/utils/request.js'
+
+// 导出 获取文章推荐数据的 方法
+// 这里需要传入 timestamp 时间戳  channel_id (频道id)
+export function getArticles (params) {
+  return request({
+    // 这里必须要用完整的地址 因为这个基地址 版本和另一个 基地址不一样 这个基地址版本V1_1
+    url: 'http://ttapi.research.itcast.cn/app/v1_1/articles',
+    params: { with_top: 1, ...params } // 利用延展运算符 合并 数据  使其两个数据合并在一起
+  })
+}
