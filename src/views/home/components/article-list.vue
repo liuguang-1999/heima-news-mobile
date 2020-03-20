@@ -99,16 +99,40 @@ export default {
       }
     },
     // 下拉刷新
-    onrefresh () {
-      setTimeout(() => {
-        const arr = Array.from(
-          Array(2),
-          (value, index) => '追加' + (index + 1)
-        )
-        this.list.unshift(...arr)
-        this.isLoading = false // 手动关闭 下拉加载状态
-        this.successText = `刷新成功添加了${arr.length}条信息` // 下拉刷新 成功后提示信息文本
-      }, 800)
+    async onrefresh () {
+      // 下拉刷新请求发送最新的时间戳
+      const ser = await getArticles({
+        channel_id: this.channel_id,
+        timestamp: Date.now() // 这个时间戳 永远是 最新的时间戳
+      })
+      // 手动关闭下拉刷新的状态
+      this.isLoading = false
+      // 需要判断 最新的时间戳能否换来新的数据 如果能换来新的数据 把新的数据整个替换旧数据 如果不能就告诉用户 暂时没有数据 更新
+
+      if (ser.results.length) {
+        // 如果有返回数据
+        // 需要将整个数据列表 进行替换
+        this.list = ser.results // 替换后 历史数据全部被 覆盖
+        if (ser.pre_timestamp) {
+          // 因为下拉刷新 换来了一波新的数据 里面又有 历史时间戳了
+          this.finished = false // 重新唤醒列表 让列表可以继续上拉加载
+          this.timestamp = ser.pre_timestamp // q记录历史的时间戳
+        }
+        this.successText = `更新了${ser.results.length}条数据`
+      } else {
+        // 如果换不来 数据提醒一下
+        this.successText = '当前已是最新数据了'
+      }
+
+      // setTimeout(() => {
+      //   const arr = Array.from(
+      //     Array(2),
+      //     (value, index) => '追加' + (index + 1)
+      //   )
+      //   this.list.unshift(...arr)
+      //   this.isLoading = false // 手动关闭 下拉加载状态
+      //   this.successText = `刷新成功添加了${arr.length}条信息` // 下拉刷新 成功后提示信息文本
+      // }, 800)
     }
   }
 }
