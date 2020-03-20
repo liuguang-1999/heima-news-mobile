@@ -8,7 +8,7 @@
       <van-list v-model="uploading" :finished="finished" @load="onLoad" finished-text="数据加载完毕">
         <!-- 边框 -->
         <van-cell-group>
-          <van-cell v-for="item in list" :key="item.art_id">
+          <van-cell v-for="item in list" :key="item.art_id.toString()">
              <!-- item.art_id 此时是一个大数字的对象 v-for 的key需要用字符串或者数字代理 v-for="item in 1" :key="item.art_id.toString()" -->
           <van-cell >
             <!-- 放置元素 文章列表的循环项  无图  单图  三图 -->
@@ -30,9 +30,9 @@
               </div>
               <!-- 作者信息 -->
               <div class="info_box">
-                <span>名字</span>
-                <span>0评论</span>
-                <span>事件</span>
+                <span>{{ item.aut_name }}</span>
+                <span>{{ item.comm_count }}评论</span>
+                <span>{{ item.pubdate }}</span>
                 <span class="close">
                   <van-icon name="cross"></van-icon>
                 </span>
