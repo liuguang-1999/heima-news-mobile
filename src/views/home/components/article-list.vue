@@ -85,6 +85,7 @@ export default {
       // this.list.push(...arr) // 结构出来 添加到 list 这个数组里面去
       // this.uploading = false // 数据 请求完毕 关闭 上拉加载
       // timestamp: this.timestamp || Date.now() 如果有历史时间戳 用历史时间戳 没有就 new 一个当前的时间戳
+      await this.$sleep() // 在这个函数 强制等待 2秒 用await
       const ser = await getArticles({ channel_id: this.channel_id, timestamp: this.timestamp || Date.now() }) // this.channel_id 指的是 当前 props 里的频道id  这里还需要传入一个时间戳
       this.list.push(...ser.results) // 将数据追加到队列尾部
       this.uploading = false // 关闭加载状态
@@ -100,6 +101,7 @@ export default {
     },
     // 下拉刷新
     async onrefresh () {
+      await this.$sleep() // 在这个函数 强制等待 2秒 用await
       // 下拉刷新请求发送最新的时间戳
       const ser = await getArticles({
         channel_id: this.channel_id,
