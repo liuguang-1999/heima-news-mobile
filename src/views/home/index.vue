@@ -13,29 +13,41 @@
         </div>-->
         <!-- ArticleList 组件替换了 上面整套流程 -->
         <!-- 需要将频道 id item.id 传递给每一个列表组件 父传子=> props -->
-        <ArticleList :channel_id="item.id"></ArticleList>
+        <ArticleList :channel_id="item.id" @showAction="openAction"></ArticleList>
       </van-tab>
     </van-tabs>
     <!-- 放置编辑频道 的字体图标 -->
     <span class="bar_btn">
       <van-icon name="wap-nav" dot />
     </span>
+    <!-- 在这个位置上 放置一个弹层组件 -->
+    <van-popup v-model="showMoreAction" style="width:80%;">
+      <!-- 反馈内容组件 -->
+      <moreAction></moreAction>
+    </van-popup>
   </div>
 </template>
 
 <script>
+import moreAction from './components/more-action'
 import { getMyChannels } from '@/api/channels.js'
 import ArticleList from './components/article-list'
 export default {
   components: {
-    ArticleList
+    ArticleList,
+    moreAction
   },
   data () {
     return {
-      channels: [] // 用来接收频道 数据
+      channels: [], // 用来接收频道 数据
+      showMoreAction: false // 定义变量 是否显示弹层 默认不显示弹层组件
     }
   },
   methods: {
+    // 定义一个 子传父接收讯息方法
+    openAction () {
+      this.showMoreAction = true // 点击叉号后 利用 子传父 接收到的讯息 出发后 这里进行监听  然后把 showMoreAction 这个弹层给打开
+    },
     // 定义接收频道数据 的方法
     async getMyChannels () {
       const ser = await getMyChannels()

@@ -35,7 +35,11 @@
                 <span>{{ item.comm_count }}评论</span>
                 <!-- 使用时间过滤器 -->
                 <span>{{ item.pubdate | reltime}}</span>
-                <span class="close">
+                <!-- 此❌的显示 根据是否具有token令牌  进行显示 如果登陆了 就显示 没登陆就不显示 -->
+                <!-- 用最原始的方式 进行显示和隐藏叉号 -->
+                <!-- <span class="close" v-if="$store.state.user.token"> -->
+                  <!-- 还可以通过辅助函数的方式去做 利用 mapState 方法 -->
+                <span class="close" v-if="user.token" @click="$emit('showAction')">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>
@@ -51,7 +55,14 @@
 <script>
 // 引入 获取推荐的方法
 import { getArticles } from '@/api/articles.js'
+// 引入 辅助函数
+import { mapState } from 'vuex'
 export default {
+  // 计算属性
+  computed: {
+    // 将 State 解构出来
+    ...mapState(['user'])
+  },
   // props:['channel_id'] // 字符串数组 接收方式 比较简单 比较low 易于上手 但! 还有更好的方放 除了用数组 还可以用 对象的形式
   // props 以对象形式的形式 编写 可以约束传入的值 必填=>(没传入这个值 就会报错) 以及 传入值的类型
   props: {
