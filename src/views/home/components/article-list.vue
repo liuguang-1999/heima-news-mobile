@@ -10,7 +10,7 @@
         <van-cell-group>
           <van-cell v-for="item in list" :key="item.art_id.toString()">
              <!-- item.art_id 此时是一个大数字的对象 v-for 的key需要用字符串或者数字代理 v-for="item in 1" :key="item.art_id.toString()" -->
-          <van-cell >
+           <van-cell >
             <!-- 放置元素 文章列表的循环项  无图  单图  三图 -->
             <div class="article_item">
               <!-- 标题 -->
@@ -39,7 +39,8 @@
                 <!-- 用最原始的方式 进行显示和隐藏叉号 -->
                 <!-- <span class="close" v-if="$store.state.user.token"> -->
                   <!-- 还可以通过辅助函数的方式去做 利用 mapState 方法 -->
-                <span class="close" v-if="user.token" @click="$emit('showAction')">
+                  <!-- 需要传出 点击叉号的文章的id -->
+                <span class="close" v-if="user.token" @click="$emit('showAction',item.art_id.toString())">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>

@@ -40,13 +40,15 @@ export default {
   data () {
     return {
       channels: [], // 用来接收频道 数据
-      showMoreAction: false // 定义变量 是否显示弹层 默认不显示弹层组件
+      showMoreAction: false, // 定义变量 是否显示弹层 默认不显示弹层组件
+      articleId: null // 接收和存储id 的变量 默认值为空
     }
   },
   methods: {
     // 定义一个 子传父接收讯息方法
-    openAction () {
+    openAction (id) { // 接收父组件 传过来的id参数
       this.showMoreAction = true // 点击叉号后 利用 子传父 接收到的讯息 出发后 这里进行监听  然后把 showMoreAction 这个弹层给打开
+      this.articleId = id // 子传父 获取到的 id 存起来 遇到不喜欢的文章了 id就可以调用了
     },
     // 定义接收频道数据 的方法
     async getMyChannels () {
