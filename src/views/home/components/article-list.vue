@@ -56,9 +56,32 @@
 <script>
 // 引入 获取推荐的方法
 import { getArticles } from '@/api/articles.js'
+import eventBus from '@/utils/eventbus'
 // 引入 辅助函数
 import { mapState } from 'vuex'
 export default {
+  // 初始化的钩子函数
+  created () {
+    // 监听删除 文章事件
+    eventBus.$on('delArticle', (articId, channelsId) => {
+      // 这个位置  每个组件实例都会触发
+      // articId 文章id  channelsId 频道 id
+      // 还需要判断一下 传递过来的频道是否等于 自身的频道
+      if (channelsId === this.channel_id) {
+        // 说明当前的这个 article-list 实例 就是我们要删除数据的实例
+        const index = this.list.findIndex(item => item.art_id.toString() === articId)
+        // 通过 id 查询对应文章数据所在的下标
+        if (index > -1) {
+          // 因为 下表是从0开始的 所以应该大于-1
+          this.list.splice(index, 1) // 删除对应下表的数据
+        }
+        if (this.list.length === 0) {
+          // 说明你把 数据给删光了  就不会触发 滚动条的下拉刷新事件了
+          this.onLoad() // 列表数据删没了就去 手动的去 请求列表数据
+        }
+      }
+    })
+  },
   // 计算属性
   computed: {
     // 将 State 解构出来

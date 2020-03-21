@@ -2,7 +2,8 @@
   <div class="container">
     <!-- 主页 -->
     <!-- 顶部 标签页 -->
-    <van-tabs>
+    <!-- activeIndex 默认绑定激活页签 -->
+    <van-tabs  v-model="activeIndex">
       <!-- 内部标签 -->
       <van-tab :title=" item.name " v-for="item in channels" :key="item.id">
         <!-- 单元格 -->
@@ -34,6 +35,7 @@ import moreAction from './components/more-action'
 import { getMyChannels } from '@/api/channels.js'
 import ArticleList from './components/article-list'
 import { dislikeArticle } from '@/api/articles.js' // 调用不感兴趣 接口
+import eventBus from '@/utils/eventbus.js' // 引入事件监听 机制  / 事件公交车
 export default {
   components: {
     ArticleList,
@@ -43,7 +45,8 @@ export default {
     return {
       channels: [], // 用来接收频道 数据
       showMoreAction: false, // 定义变量 是否显示弹层 默认不显示弹层组件
-      articleId: null // 接收和存储id 的变量 默认值为空
+      articleId: null, // 接收和存储id 的变量 默认值为空
+      activeIndex: 0 // 当前默认激活的页签
     }
   },
   methods: {
@@ -62,6 +65,11 @@ export default {
         await dislikeArticle({
           target: this.articleId // 传入不喜欢文章的id
         })
+        // 利用事件 广播的机制 触发一个事件 通知对应的tab页 删除不感兴趣的文章数据
+        // this.channels[this.activeIndex].id  当前激活页签的频道数据
+        eventBus.$emit('delArticle', this.articleId, this.channels[this.activeIndex].id) // 不感兴趣的id 传给事件公交车 触发这个事件
+        // 关闭弹层
+        this.showMoreAction = false
         this.$notify({ type: 'success', message: '操作成功' })
       } catch (error) {
         // 默认是 红色警示框
