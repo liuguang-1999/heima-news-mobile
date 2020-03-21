@@ -14,3 +14,13 @@ export function getArticles (params) {
     params: { with_top: 1, ...params } // 利用延展运算符 合并 数据  使其两个数据合并在一起
   })
 }
+/**
+ *    不感兴趣 文章的接口
+ */
+export function dislikeArticle (data) {
+  return ({
+    url: '/article/dislikes', // 不喜欢 文章的接口地址
+    method: 'post', // 请求类型
+    data // 不喜欢 文章的id 发送到服务器
+  })
+}

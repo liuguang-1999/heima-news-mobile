@@ -23,7 +23,8 @@
     <!-- 在这个位置上 放置一个弹层组件 -->
     <van-popup v-model="showMoreAction" style="width:80%;">
       <!-- 反馈内容组件 -->
-      <moreAction></moreAction>
+      <!-- 在这里监听 不感兴趣的事件 -->
+      <moreAction @dislike="dislikeOrReport"></moreAction>
     </van-popup>
   </div>
 </template>
@@ -32,6 +33,7 @@
 import moreAction from './components/more-action'
 import { getMyChannels } from '@/api/channels.js'
 import ArticleList from './components/article-list'
+import { dislikeArticle } from '@/api/articles.js' // 调用不感兴趣 接口
 export default {
   components: {
     ArticleList,
@@ -54,6 +56,17 @@ export default {
     async getMyChannels () {
       const ser = await getMyChannels()
       this.channels = ser.channels // 将获取到的 数据 赋值给data中的 channels 数组
+    },
+    async dislikeOrReport () {
+      try {
+        await dislikeArticle({
+          target: this.articleId // 传入不喜欢文章的id
+        })
+        this.$notify({ type: 'success', message: '操作成功' })
+      } catch (error) {
+        // 默认是 红色警示框
+        this.$notify({ type: 'danger', message: '操作失败' })
+      }
     }
   },
   created () {
