@@ -11,7 +11,7 @@ import plugin from '@/utils/plugin.js'
 Vue.config.productionTip = false
 Vue.use(Vant) // 注册Vant的所有组件 一旦注册任意位置都可以使用vant的组件 相当于调用了vant的install方法吧
 // 以上做法是完整导入的模式
-Vue.use(plugin)
+Vue.use(plugin) //  plugin 会调用 utils/plugin.js/install (Vue) 里面的全部方法
 new Vue({
   router,
   store,
