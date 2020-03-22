@@ -25,7 +25,9 @@
     <van-popup v-model="showMoreAction" style="width:80%;">
       <!-- 反馈内容组件 -->
       <!-- 在这里监听 不感兴趣的事件 -->
-      <moreAction @dislike="dislikeOrReport"></moreAction>
+      <!-- 不喜欢文章 和 举报文章 实际上要用一个方法 -->
+      <!-- $evten 就是传出来的参数 -->
+      <moreAction @dislike="dislikeOrReport('dislike')" @report="dislikeOrReport('report',$event)"></moreAction>
     </van-popup>
   </div>
 </template>
@@ -34,7 +36,7 @@
 import moreAction from './components/more-action'
 import { getMyChannels } from '@/api/channels.js'
 import ArticleList from './components/article-list'
-import { dislikeArticle } from '@/api/articles.js' // 调用不感兴趣 接口
+import { dislikeArticle, reportArticle } from '@/api/articles.js' // 调用不感兴趣 接口
 import eventBus from '@/utils/eventbus.js' // 引入事件监听 机制  / 事件公交车
 export default {
   components: {
@@ -60,10 +62,15 @@ export default {
       const ser = await getMyChannels()
       this.channels = ser.channels // 将获取到的 数据 赋值给data中的 channels 数组
     },
-    async dislikeOrReport () {
+    // operateType 是操作类型 如果是 dislike 即使不喜欢 如果是 report 就是举报
+    async dislikeOrReport (operateType, type) { // 这里的 type 通过$evten 传出来
       try {
-        await dislikeArticle({
+        // 需要根据一个参数来判断 是举报还是不喜欢
+        operateType === 'dislike' ? await dislikeArticle({ // 用三元来决定 用那个传参 接口
           target: this.articleId // 传入不喜欢文章的id
+        }) : await reportArticle({
+          target: this.articleId, // 传入 id
+          type
         })
         // 利用事件 广播的机制 触发一个事件 通知对应的tab页 删除不感兴趣的文章数据
         // this.channels[this.activeIndex].id  当前激活页签的频道数据
@@ -75,7 +82,25 @@ export default {
         // 默认是 红色警示框
         this.$notify({ type: 'danger', message: '操作失败' })
       }
-    }
+    }/* ,
+    // 接收举报文章 自定义事件 $emit()
+    async reportArticle (type) {
+      try {
+        await reportArticle({
+          target: this.articleId, // 传入 id
+          type
+        })
+        // await 下方认为上方逻辑 通顺
+        // 同样的 也要把 举报完的文章 给删除了
+        eventBus.$emit('delArticle', this.articleId, this.channels[this.activeIndex].id) // 不感兴趣的id 传给事件公交车 触发这个事件
+        // 关闭弹层
+        this.showMoreAction = false
+        this.$notify({ type: 'success', message: '操作成功' })
+      } catch (error) {
+        // 默认是 红色警示框
+        this.$notify({ type: 'danger', message: '操作失败' })
+      }
+    } */
   },
   created () {
     this.getMyChannels()

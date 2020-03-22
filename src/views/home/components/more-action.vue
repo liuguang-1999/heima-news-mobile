@@ -11,23 +11,24 @@
     <!-- 单元格组 2-->
     <van-cell-group v-else>
        <van-cell icon="arrow-left" @click="isReport=false">返回</van-cell>
-       <van-cell>侵权</van-cell>
-       <van-cell>色情</van-cell>
-       <van-cell>暴力</van-cell>
-       <van-cell>低俗</van-cell>
-       <van-cell>不适</van-cell>
-       <van-cell>错误</van-cell>
-       <van-cell>其他</van-cell>
+       <!-- 注册一个自定义事件 -->
+       <van-cell v-for="item in reports" :key="item.value" @click="$emit('report',item.value)">{{ item.label }}</van-cell>
        </van-cell-group>
   </div>
 </template>
 
 <script>
+import { reports } from '@/api/constants.js' // 引入常量里面的变量
+import eventBus from '@/utils/eventbus' // 引入 事件公交车
 export default {
   data () {
     return {
-      isReport: false
+      isReport: false,
+      reports // ES6 的简写  把 reports 这个 常量数据 给到我们的 data 数据中  才可以使用
     }
+  },
+  created () {
+    eventBus.$on('delArticle', () => (this.isReport = false)) // 点击删除就重置为 最初状态
   }
 }
 </script>

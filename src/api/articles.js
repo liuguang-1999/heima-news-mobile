@@ -24,3 +24,13 @@ export function dislikeArticle (data) {
     data // 不喜欢 文章的id 发送到服务器
   })
 }
+/**
+ *   封装一个 举报文章 接口
+ */
+export function reportArticle (data) {
+  return request({
+    url: '/article/reports',
+    data,
+    method: 'post'
+  })
+}
