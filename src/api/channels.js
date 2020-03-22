@@ -9,6 +9,9 @@ import store from '@/store' // 引入Vuex 实例化
 // 要将这个 频道方法 改造一下 改造成本地化的频道数据
 const CACHE_CHANNEL_V = 'hm-94-toutiao-v' // 登录用户的key
 const CACHE_CHANNEL_T = 'hm-94-toutiao-t' // 游客用户的key
+/**
+ *      获取频道API 的封装
+ */
 export function getMyChannels () {
   // 因为 后端编辑用户接口存在问题 所以要用本地化的手段进行升级
   return new Promise(function (resolve, reject) {
@@ -41,5 +44,34 @@ export function getMyChannels () {
 export function getAllChannels () {
   return request({
     url: '/channels'
+  })
+}
+/**
+ *      删除频道API的 封装
+ *      delChannel (id)  内部应该传入 一个id 作为删除的依据
+ */
+export function delChannel (id) {
+  return new Promise(function (resolve, reject) {
+    // 有传过来的 id 的话 就可以直接从缓存中 删除对应的 id 了
+    // 删除频道时 无论如何都有数据
+    const key = store.state.user.token ? CACHE_CHANNEL_V : CACHE_CHANNEL_T // 这个 key 根据当前游客是否登录的状态 来判断用那个 key
+    const channels = localStorage.getItem(JSON.parse(key)) // 直接将 本地缓存中的字符串转化成一个对象
+    //     // 第一种删除方式
+    // // 返回一个 新数组 返回不等于 id 的内容
+    // const str = str.filter(item => item.id !== id) // 得到一个新数组
+    // // 接下来 重新写入缓存
+    // localStorage.setItem(key, JSON.stringify(str))
+
+    // 第二种 删除 方式
+    const index = channels.findIndex(item => item.id === id) // 找到 这个 id 的 索引
+    if (index > -1) {
+      channels.splice(index, 1) // 删除索引对应的元素
+      // 接下来 重新写入缓存
+      localStorage.setItem(key, JSON.stringify(channels))
+      // 逻辑成功了 接下来就执行 resolve
+      resolve() //  resolve 可以传参 也可以传 取决于 后面的逻辑 有没有参数
+    } else {
+      reject(new Error('删除失败。。。'))
+    }
   })
 }
