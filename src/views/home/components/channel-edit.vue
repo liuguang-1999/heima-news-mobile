@@ -9,9 +9,10 @@
         <van-button v-else @click="editing=false" size="mini" type="danger" plain>完成</van-button>
       </div>
       <van-grid class="van-hairline--left">
-        <van-grid-item v-for="index in 8" :key="index">
-          <span class="f12">频道{{index}}</span>
-          <van-icon class="btn" name="cross"></van-icon>
+        <van-grid-item v-for="(item,index) in channels" :key="index">
+          <span class="f12">{{ item.name }}</span>
+          <!-- 叉号❌标签 应该在 进入编辑状态时显示 和 退出编辑状态时不显示 -->
+          <van-icon v-if="!index == 0 && editing" class="btn" name="cross"></van-icon>
         </van-grid-item>
       </van-grid>
     </div>
@@ -35,6 +36,15 @@ export default {
   data () {
     return {
       editing: false // 正在编辑状态  用这个状态控制 是否显示删除的图标❌
+    }
+  },
+  //   props:['channels'] 老方法 简单易上手 没有难度
+  // 下面是 以对象的形式 去结构 props 的数据
+  props: {
+    channels: { // 这里的 channels 是父组件传递过来的 参数 用循环去遍历他
+      required: true, // 第一个参数 required 必填项
+      type: Array, // 第二个参数是 传递数据的类型
+      default: () => [] // 默认值为 空数组
     }
   }
 }

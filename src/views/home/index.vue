@@ -32,7 +32,8 @@
     <!-- 频道编辑组件 -->
     <van-action-sheet v-model="show" title="标题" :round="false">
       <!-- 弹出面板 -->
-      <ChannelEdit />
+      <!-- 此时将 父组件的数据 传递给了 子组件 数据在 channel-edit 子组件里面接收 -->
+      <ChannelEdit :channels="channels" />
     </van-action-sheet>
   </div>
 </template>
