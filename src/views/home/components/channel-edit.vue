@@ -12,6 +12,7 @@
         <van-grid-item v-for="(item,index) in channels" :key="index">
           <span class="f12">{{ item.name }}</span>
           <!-- 叉号❌标签 应该在 进入编辑状态时显示 和 退出编辑状态时不显示 -->
+          <!-- 频道的 第一个永远不显示 所以说条件在加一个 不等于0 -->
           <van-icon v-if="!index == 0 && editing" class="btn" name="cross"></van-icon>
         </van-grid-item>
       </van-grid>
@@ -20,10 +21,10 @@
     <!-- 我的 频道里面的数据 是  当前用户自己的频道数据(在登录情况下用户自己的频道数据，匿名情况下自己的频道数据) -->
     <!-- 可选频道怎么定义  全部频道 - 我的频道 = 可选频道 -->
     <div class="channel">
-      <div class="tit">可选频道：</div>
+      <div class="tit">可选频道：</div>item
       <van-grid class="van-hairline--left">
-        <van-grid-item v-for="index in 8" :key="index">
-          <span class="f12">频道{{index}}</span>
+        <van-grid-item v-for="item in optionalChannels" :key="item.id">
+          <span class="f12"> {{ item.name }}</span>
           <van-icon class="btn" name="plus"></van-icon>
         </van-grid-item>
       </van-grid>
@@ -32,10 +33,12 @@
 </template>
 
 <script>
+import { getAllChannels } from '@/api/channels'
 export default {
   data () {
     return {
-      editing: false // 正在编辑状态  用这个状态控制 是否显示删除的图标❌
+      editing: false, // 正在编辑状态  用这个状态控制 是否显示删除的图标❌
+      allChannels: [] // 定义一个变量用来接收 全部的数据
     }
   },
   //   props:['channels'] 老方法 简单易上手 没有难度
@@ -45,6 +48,25 @@ export default {
       required: true, // 第一个参数 required 必填项
       type: Array, // 第二个参数是 传递数据的类型
       default: () => [] // 默认值为 空数组
+    }
+  },
+  methods: {
+    // 获取全部 频道的方法
+    async getAllChannels () {
+      const ser = await getAllChannels()
+      this.allChannels = ser.channels // 直接 把频道 数据 复制给 data 的全部频道
+    }
+  },
+  created () {
+    this.getAllChannels() // 调用 组件方法 获取全部频道数据
+  },
+  // 为什么要用 计算属性 因为 可选频道是一个 动态的结果 全部数据 allChannels 在变化 用户频道 props => 他们里面的任何数据发生了变化 都要重新去计算频道数据 => 而且性能较高是有缓存的
+  computed: {
+    // 可选频道
+    // 计算属性必须要有 return 的
+    optionalChannels () {
+      // 全部频道 - 用户频道 = 可选频道
+      return this.allChannels.filter(item => !this.channels.some(o => o.id === item.id))
     }
   }
 }

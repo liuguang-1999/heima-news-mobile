@@ -11,3 +11,11 @@ export function getMyChannels () {
     url: '/user/channels'
   })
 }
+/**
+ *    封装 获取全部频道的接口
+ */
+export function getAllChannels () {
+  return request({
+    url: '/channels'
+  })
+}
