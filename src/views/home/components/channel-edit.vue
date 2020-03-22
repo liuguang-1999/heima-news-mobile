@@ -13,10 +13,10 @@
         <!-- <van-grid-item v-for="(item,index) in channels" :key="index" @click="$emit('selectChannel',item.id)"> -->
             <!-- 第二种传递索引的方式 -->
         <van-grid-item v-for="(item,index) in channels" :key="index" @click="$emit('selectChannel',index)">
-          <span class="f12">{{ item.name }}</span>
+          <span class="f12 " :class="{red: index == articleId }">{{ item.name }}</span>
           <!-- 叉号❌标签 应该在 进入编辑状态时显示 和 退出编辑状态时不显示 -->
           <!-- 频道的 第一个永远不显示 所以说条件在加一个 不等于0 -->
-          <van-icon v-if="!index == 0 && editing" class="btn" name="cross"></van-icon>
+          <van-icon v-if="!index == 0 && editing" class="btn" name="cross" ></van-icon>
         </van-grid-item>
       </van-grid>
     </div>
@@ -24,7 +24,7 @@
     <!-- 我的 频道里面的数据 是  当前用户自己的频道数据(在登录情况下用户自己的频道数据，匿名情况下自己的频道数据) -->
     <!-- 可选频道怎么定义  全部频道 - 我的频道 = 可选频道 -->
     <div class="channel">
-      <div class="tit">可选频道：</div>item
+      <div class="tit">可选频道：</div>
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="item in optionalChannels" :key="item.id">
             <!-- 点击频道项的时候 需要把当前点击的频道id给传出去 也可以传索引 -->
@@ -52,6 +52,10 @@ export default {
       required: true, // 第一个参数 required 必填项
       type: Array, // 第二个参数是 传递数据的类型
       default: () => [] // 默认值为 空数组
+    },
+    articleId: {
+      required: true, // 第一个参数 required 必填项
+      type: Number // 传递数据的类型
     }
   },
   methods: {
