@@ -9,7 +9,10 @@
         <van-button v-else @click="editing=false" size="mini" type="danger" plain>完成</van-button>
       </div>
       <van-grid class="van-hairline--left">
-        <van-grid-item v-for="(item,index) in channels" :key="index">
+          <!-- 第一种 传递id的形式 -->
+        <!-- <van-grid-item v-for="(item,index) in channels" :key="index" @click="$emit('selectChannel',item.id)"> -->
+            <!-- 第二种传递索引的方式 -->
+        <van-grid-item v-for="(item,index) in channels" :key="index" @click="$emit('selectChannel',index)">
           <span class="f12">{{ item.name }}</span>
           <!-- 叉号❌标签 应该在 进入编辑状态时显示 和 退出编辑状态时不显示 -->
           <!-- 频道的 第一个永远不显示 所以说条件在加一个 不等于0 -->
@@ -24,6 +27,7 @@
       <div class="tit">可选频道：</div>item
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="item in optionalChannels" :key="item.id">
+            <!-- 点击频道项的时候 需要把当前点击的频道id给传出去 也可以传索引 -->
           <span class="f12"> {{ item.name }}</span>
           <van-icon class="btn" name="plus"></van-icon>
         </van-grid-item>

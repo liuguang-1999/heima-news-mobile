@@ -33,7 +33,7 @@
     <van-action-sheet v-model="show" title="标题" :round="false">
       <!-- 弹出面板 -->
       <!-- 此时将 父组件的数据 传递给了 子组件 数据在 channel-edit 子组件里面接收 -->
-      <ChannelEdit :channels="channels" />
+      <ChannelEdit :channels="channels" @selectChannel="selectChannel"/>
     </van-action-sheet>
   </div>
 </template>
@@ -61,6 +61,19 @@ export default {
     }
   },
   methods: {
+    // 第二种方式
+    selectChannel (index) {
+      // 当子组件 触发 selectChannel 的点击事件时 会触发 该方法
+      this.activeIndex = index // 对应频道的索引 设置给当前激活的 标签
+      this.show = false // 关闭弹层
+    },
+    /*  // 第一种方式
+    selectChannel (id) {
+      // 当子组件 触发 selectChannel 的点击事件时 会触发 该方法
+      const index = this.channels.findIndex(item => item.id === id) // 去频道数据里面找索引
+      this.activeIndex = index // 对应频道的索引 设置给当前激活的 标签
+      this.show = false // 关闭弹层
+    }, */
     // 定义一个 子传父接收讯息方法
     openAction (id) { // 接收父组件 传过来的id参数
       this.showMoreAction = true // 点击叉号后 利用 子传父 接收到的讯息 出发后 这里进行监听  然后把 showMoreAction 这个弹层给打开
