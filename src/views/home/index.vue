@@ -18,7 +18,7 @@
       </van-tab>
     </van-tabs>
     <!-- 放置编辑频道 的字体图标 -->
-    <span class="bar_btn">
+    <span class="bar_btn" @click="show = true">
       <van-icon name="wap-nav" dot />
     </span>
     <!-- 在这个位置上 放置一个弹层组件 -->
@@ -29,6 +29,11 @@
       <!-- $evten 就是传出来的参数 -->
       <moreAction @dislike="dislikeOrReport('dislike')" @report="dislikeOrReport('report',$event)"></moreAction>
     </van-popup>
+    <!-- 频道编辑组件 -->
+    <van-action-sheet v-model="show" title="标题" :round="false">
+      <!-- 弹出面板 -->
+      <ChannelEdit />
+    </van-action-sheet>
   </div>
 </template>
 
@@ -38,17 +43,20 @@ import { getMyChannels } from '@/api/channels.js'
 import ArticleList from './components/article-list'
 import { dislikeArticle, reportArticle } from '@/api/articles.js' // 调用不感兴趣 接口
 import eventBus from '@/utils/eventbus.js' // 引入事件监听 机制  / 事件公交车
+import ChannelEdit from './components/channel-edit' // 引入 频道编辑组件
 export default {
   components: {
     ArticleList,
-    moreAction
+    moreAction,
+    ChannelEdit
   },
   data () {
     return {
       channels: [], // 用来接收频道 数据
       showMoreAction: false, // 定义变量 是否显示弹层 默认不显示弹层组件
       articleId: null, // 接收和存储id 的变量 默认值为空
-      activeIndex: 0 // 当前默认激活的页签
+      activeIndex: 0, // 当前默认激活的页签
+      show: false // 控制频道编辑组件 弹出层的显示与隐藏
     }
   },
   methods: {
@@ -109,6 +117,17 @@ export default {
 </script>
 
 <style lang='less' scoped>
+.van-action-sheet {
+  max-height: 100%;
+  height: 100%;
+  .van-action-sheet__header {
+    background: #3296fa;
+    color: #fff;
+    .van-icon-close {
+      color: #fff;
+    }
+  }
+}
 .van-tabs {
   height: 100%;
   display: flex;
