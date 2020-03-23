@@ -33,14 +33,14 @@
     <van-action-sheet v-model="show" title="标题" :round="false">
       <!-- 弹出面板 -->
       <!-- 此时将 父组件的数据 传递给了 子组件 数据在 channel-edit 子组件里面接收 -->
-      <ChannelEdit :channels="channels" @selectChannel="selectChannel" :articleId="activeIndex"/>
+      <ChannelEdit :channels="channels" @selectChannel="selectChannel" :articleId="activeIndex" @delCannel="delCannel" />
     </van-action-sheet>
   </div>
 </template>
 
 <script>
 import moreAction from './components/more-action'
-import { getMyChannels } from '@/api/channels.js'
+import { getMyChannels, delChannel } from '@/api/channels.js'
 import ArticleList from './components/article-list'
 import { dislikeArticle, reportArticle } from '@/api/articles.js' // 调用不感兴趣 接口
 import eventBus from '@/utils/eventbus.js' // 引入事件监听 机制  / 事件公交车
@@ -61,19 +61,40 @@ export default {
     }
   },
   methods: {
+    // 删除频道的方法
+    async delCannel (id) {
+      try {
+        await delChannel(id) // 调用删除 API方法
+        // 如果此时成功的 resolve 了 那就应该移出 当前 data 中 channels 的数据
+        const index = this.channels.findIndex(item => item.id === id) // 找出对应的索引
+        // 找到了 索引后 删除 channels 中对应索引的数据
+        // 删除 索引对应的 频道数据
+        if (index <= this.activeIndex) {
+          // 此时你删除了 上面对应的索引 是在当激活索引之前的 或者等于当前激活索引的
+          // 此时就需要把当前激活的索引 向前挪一位
+          this.activeIndex = this.activeIndex - 1
+        }
+        this.channels.splice(index, 1) // 删除对应的索引频道
+      } catch (error) {
+        console.log(error)
+
+        this.$notify({ message: '删除频道失败', duration: 800 })
+      }
+      // 此时应该先调用api
+    },
+    /*  // 第一种方式
+     selectChannel (id) {
+      // 当子组件 触发 selectChannel 的点击事件时 会触发 该方法
+      const index = this.channels.findIndex(item => item.id === id) // 去频道数据里面找索引
+      this.activeIndex = index // 对应频道的索引 设置给当前激活的 标签
+      this.show = false // 关闭弹层
+    }, */
     // 第二种方式
     selectChannel (index) {
       // 当子组件 触发 selectChannel 的点击事件时 会触发 该方法
       this.activeIndex = index // 对应频道的索引 设置给当前激活的 标签
       this.show = false // 关闭弹层
     },
-    /*  // 第一种方式
-    selectChannel (id) {
-      // 当子组件 触发 selectChannel 的点击事件时 会触发 该方法
-      const index = this.channels.findIndex(item => item.id === id) // 去频道数据里面找索引
-      this.activeIndex = index // 对应频道的索引 设置给当前激活的 标签
-      this.show = false // 关闭弹层
-    }, */
     // 定义一个 子传父接收讯息方法
     openAction (id) { // 接收父组件 传过来的id参数
       this.showMoreAction = true // 点击叉号后 利用 子传父 接收到的讯息 出发后 这里进行监听  然后把 showMoreAction 这个弹层给打开
@@ -104,7 +125,8 @@ export default {
         // 默认是 红色警示框
         this.$notify({ type: 'danger', message: '操作失败' })
       }
-    }/* ,
+    }
+    /* ,
     // 接收举报文章 自定义事件 $emit()
     async reportArticle (type) {
       try {

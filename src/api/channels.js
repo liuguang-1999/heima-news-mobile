@@ -55,7 +55,7 @@ export function delChannel (id) {
     // 有传过来的 id 的话 就可以直接从缓存中 删除对应的 id 了
     // 删除频道时 无论如何都有数据
     const key = store.state.user.token ? CACHE_CHANNEL_V : CACHE_CHANNEL_T // 这个 key 根据当前游客是否登录的状态 来判断用那个 key
-    const channels = localStorage.getItem(JSON.parse(key)) // 直接将 本地缓存中的字符串转化成一个对象
+    const channels = JSON.parse(localStorage.getItem(key)) // 直接将 本地缓存中的字符串转化成一个对象
     //     // 第一种删除方式
     // // 返回一个 新数组 返回不等于 id 的内容
     // const str = str.filter(item => item.id !== id) // 得到一个新数组
