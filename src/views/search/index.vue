@@ -12,15 +12,18 @@
       </van-cell>
     </van-cell-group>
     <!-- 历史部分 收缩后的记录 会在这里显示 -->
+    <!-- 果如没有 历史记录 -->
     <div class="history-box" v-else>
-      <div class="head">
+      <!-- 只有当历史记录 存在的时候 才显示 历史记录 的头部模块 -->
+      <div class="head" v-if="historylist.length">
         <span>历史记录</span>
-        <van-icon name="delete"></van-icon>
+        <van-icon name="delete" ></van-icon>
       </div>
       <van-cell-group>
-        <van-cell>
-          <a class="word_btn">电脑</a>
-          <van-icon class="close_btn" slot="right-icon" name="cross" />
+        <van-cell v-for="(item,index) in historylist" :key="item">
+          <!-- 这个位置 需要用动态的方式生成 -->
+          <a class="word_btn">{{ item }}</a>
+          <van-icon class="close_btn" slot="right-icon" name="cross" @click="delHistory(index)"/>
         </van-cell>
       </van-cell-group>
     </div>
@@ -28,11 +31,22 @@
 </template>
 
 <script>
+const key = 'heima-94-toutiao' // 声明一个 key 用来向本地 作存储的 key
 export default {
   name: 'search',
   data () {
     return {
-      q: '' // 关键字的数据
+      q: '', // 关键字的数据
+      historylist: JSON.parse(localStorage.getItem(key) || '[]') // 搜索 历史记录 的储存数组
+    }
+  },
+  methods: {
+    // 删除历史记录 方法
+    delHistory (id) {
+      // 删除 要现在本地删除  然后在内存中删除
+      this.historylist.splice(id, 1) // 直接删除本地的历史记录
+      // 删除后的数据 同步本地的缓存中
+      localStorage.setItem(key, JSON.stringify(this.historylist))
     }
   }
 }
