@@ -33,14 +33,14 @@
     <van-action-sheet v-model="show" title="标题" :round="false">
       <!-- 弹出面板 -->
       <!-- 此时将 父组件的数据 传递给了 子组件 数据在 channel-edit 子组件里面接收 -->
-      <ChannelEdit :channels="channels" @selectChannel="selectChannel" :articleId="activeIndex" @delCannel="delCannel" />
+      <ChannelEdit :channels="channels" @selectChannel="selectChannel" :articleId="activeIndex" @delCannel="delCannel" @addChannel="addChannel" />
     </van-action-sheet>
   </div>
 </template>
 
 <script>
 import moreAction from './components/more-action'
-import { getMyChannels, delChannel } from '@/api/channels.js'
+import { getMyChannels, delChannel, addChannel } from '@/api/channels.js'
 import ArticleList from './components/article-list'
 import { dislikeArticle, reportArticle } from '@/api/articles.js' // 调用不感兴趣 接口
 import eventBus from '@/utils/eventbus.js' // 引入事件监听 机制  / 事件公交车
@@ -61,6 +61,12 @@ export default {
     }
   },
   methods: {
+    // 添加频道的方法
+    async addChannel (channel) {
+      // 调用 API 并写入缓存 成功后要将该 频道 push 到 channels 里面
+      await addChannel(channel) // 传入参数 写入 写入缓存
+      this.channels.push(channel) // 将自身数据 赋值给 data 中的 channels 数组
+    },
     // 删除频道的方法
     async delCannel (id) {
       try {

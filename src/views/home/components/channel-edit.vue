@@ -30,7 +30,8 @@
         <van-grid-item v-for="item in optionalChannels" :key="item.id">
             <!-- 点击频道项的时候 需要把当前点击的频道id给传出去 也可以传索引 -->
           <span class="f12"> {{ item.name }}</span>
-          <van-icon class="btn" name="plus"></van-icon>
+          <!-- 点击➕ 添加频道 -->
+          <van-icon class="btn" name="plus" @click="$emit('addChannel',item)"></van-icon>
         </van-grid-item>
       </van-grid>
     </div>
