@@ -75,3 +75,16 @@ export function delChannel (id) {
     }
   })
 }
+/**
+ *    封装添加频道的API
+ */
+export function addChannel (channel) {
+  return new Promise(function (resolve, reject) {
+    const key = store.state.user.token ? CACHE_CHANNEL_V : CACHE_CHANNEL_T // 这个 key 根据当前游客是否登录的状态 来判断用那个 key
+    const str = JSON.parse(localStorage.getItem(key)) // 转化数组
+    str.push(channel) // 将数据 推入到队尾
+    // 写入到缓存中去
+    localStorage.setItem(key, JSON.stringify(str))
+    resolve() // 执行这一步 相当于 告诉我们使用 promise 的方法 执行成功了
+  })
+}
