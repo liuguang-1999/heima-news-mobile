@@ -60,3 +60,14 @@ export function getArticleInfo (id) {
     url: `articles/${id}` // 获取详情地址、 传入一个 id 获取详情数据
   })
 }
+/**
+ *    获取 评论或者获取评论回复
+ */
+export function getComments (params) {
+  return request({
+    url: '/comments', // 请求地址
+    // 接口地址中 的query参数放在 params 里
+    // body参数放置在 data里
+    params // type(是文章的的回复还是回复的回复)  source(来源id)  offset(偏移量 分页依据) 查第二页的数据 传第一页的最后一个id 查第三页的数据  传第二页最后一个id ....
+  })
+}
