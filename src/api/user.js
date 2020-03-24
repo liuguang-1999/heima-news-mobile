@@ -13,3 +13,22 @@ export function login (data) {
     data // ES6 简写模式
   })
 }
+/**
+ *    关注用户
+ */
+export function followUser (data) {
+  return request({
+    url: '/user/followings', // 关注用户 接口地址
+    data, // 请求参数
+    method: 'post' // 请求类型
+  })
+}
+/**
+ *    取消关注用户
+ */
+export function unfollowUser (id) {
+  return request({
+    url: `/user/followings/${id}`,
+    method: 'DELETE' // 取消 关注接口类型
+  })
+}
