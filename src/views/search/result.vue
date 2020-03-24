@@ -19,7 +19,7 @@
                 <span>{{ item.aut_name }}</span>
                 <span>{{ item.comm_count }}</span>
                 <!-- 用之前封装的过滤器 来处理相对时间 -->
-                <span>{{ item.pubdate | relTime }}</span>
+                <span>{{ item.pubdate | reltime }}</span>
               </div>
             </div>
           </van-cell>
