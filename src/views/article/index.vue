@@ -1,6 +1,6 @@
 <template>
-      <!-- 文章 详情 -->
-    <div class='container'>
+  <!-- 文章 详情 -->
+  <div class="container">
     <van-nav-bar fixed title="文章详情" left-arrow @click-left="$router.back()" />
     <div class="detail">
       <h3 class="title">{{ article.title }}</h3>
@@ -11,7 +11,13 @@
           <p class="time">{{ article.pubdate | reltime }}</p>
         </div>
         <!-- 给关注 按钮注册点击事件 业务处理 关注&取消关注 -->
-        <van-button :loading="followLoading" @click="follow" round size="small" type="info">{{ article.is_followed ? '已关注' : '+关注' }}</van-button>
+        <van-button
+          :loading="followLoading"
+          @click="follow"
+          round
+          size="small"
+          type="info"
+        >{{ article.is_followed ? '已关注' : '+关注' }}</van-button>
       </div>
       <div class="content" v-html="article.content">
         <!-- 文章内容 有属性 有样式 有标签 -->
@@ -19,16 +25,29 @@
       </div>
       <div class="zan">
         <!-- 需要根据当前的 不喜欢&点赞 决定谁来拥有这个红色的 active 样式 1、点赞 0、不喜欢 其他数是没有 两个状态都不选择 -->
-        <van-button round size="small" :class="{active: article.attitude === 1}" plain icon="like-o">点赞</van-button>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <van-button round size="small" :class="{active: article.attitude === 0}" plain icon="delete">不喜欢</van-button>
+        <van-button
+          round
+          size="small"
+          :class="{active: article.attitude === 1}"
+          plain
+          icon="like-o"
+        >点赞</van-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <van-button
+          round
+          size="small"
+          :class="{active: article.attitude === 0}"
+          plain
+          icon="delete"
+        >不喜欢</van-button>
       </div>
+      <!-- 使用 评论组件 -->
+      <comment />
     </div>
     <!-- 放置一个遮罩层  -->
     <van-overlay :show="loading">
       <!-- 加载进度条 -->
       <div class="loading-container">
-      <van-loading />
+        <van-loading />
       </div>
     </van-overlay>
   </div>
@@ -37,7 +56,11 @@
 <script>
 import { getArticleInfo } from '@/api/articles' // 获取文章详情
 import { followUser, unfollowUser } from '@/api/user' // 点击按钮 关注 & 取消关注
+import comment from './components/comment'
 export default {
+  components: {
+    comment
+  },
   data () {
     return {
       article: {}, // 文章详情存储容器
@@ -61,10 +84,10 @@ export default {
         const target = this.article.aut_id
         // 调用 关注 & 非关注 方法 需要判断 使用那个方法
         if (this.article.is_followed) {
-        // 如果关注了 这里用 取消关注 方法
+          // 如果关注了 这里用 取消关注 方法
           await unfollowUser(target) //  传入作者id
         } else {
-        // 如果没关注 这里用 关注的方法
+          // 如果没关注 这里用 关注的方法
           await followUser({ target }) // 传入作者id
         }
         this.article.is_followed = !this.article.is_followed // 将本身的状态改为对立状态
@@ -81,12 +104,11 @@ export default {
   created () {
     this.getArticleInfo()
   }
-
 }
 </script>
 
 <style lang="less" scoped>
-.van-overlay{
+.van-overlay {
   background: none;
 }
 .loading-container {
@@ -107,20 +129,21 @@ export default {
     font-size: 18px;
     line-height: 2;
   }
-  .zan{
+  .zan {
     text-align: center;
     padding: 10px 0;
-    .active{
-      border-color:red;
+    .active {
+      border-color: red;
       color: red;
     }
   }
   .author {
     padding: 10px 0;
     display: flex;
-    position:sticky;
+    position: sticky;
     background-color: #fff;
-    top:46px;
+    top: 46px;
+    z-index: 2;
     .text {
       flex: 1;
       padding-left: 10px;
@@ -141,11 +164,11 @@ export default {
     overflow: hidden;
     white-space: pre-wrap;
     word-break: break-all;
-    /deep/ img{
-      max-width:100%;
+    /deep/ img {
+      max-width: 100%;
       background: #f9f9f9;
     }
-    /deep/ code{
+    /deep/ code {
       white-space: pre-wrap;
     }
   }
