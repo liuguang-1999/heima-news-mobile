@@ -4,7 +4,8 @@
       <!-- 放置上拉加载状态 -->
       <van-list v-model="upLoading" @load="onLoad" :finished="finished">
         <van-cell-group>
-          <van-cell v-for="item in articles " :key="item.art_id.toString()">
+          <!-- 加 to属性 跳转到文章详情页面 -->
+          <van-cell :to="`/article?artId=${item.art_id.toString()}`" v-for="item in articles " :key="item.art_id.toString()">
             <div class="article_item">
               <h3 class="van-ellipsis">{{ item.title }}</h3>
               <div class="img_box" v-if="item.cover.type === 3">

@@ -52,3 +52,11 @@ export function searchArticle (params) {
     params // 参数里面有关键词 和 分页信息
   })
 }
+/**
+ *    获取文章详情 封装API
+ */
+export function getArticleInfo (id) {
+  return request({
+    url: `articles/${id}` // 获取详情地址、 传入一个 id 获取详情数据
+  })
+}
