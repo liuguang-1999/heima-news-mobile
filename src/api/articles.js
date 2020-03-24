@@ -43,3 +43,12 @@ export function getSuggestion (params) {
     params // query 中的参数 传入到 params 中
   })
 }
+/**
+ *    封装 搜索文章接口 方法
+ */
+export function searchArticle (params) {
+  return request({
+    url: '/search', // 搜索结果
+    params // 参数里面有关键词 和 分页信息
+  })
+}
