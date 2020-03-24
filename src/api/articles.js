@@ -34,3 +34,12 @@ export function reportArticle (data) {
     method: 'post'
   })
 }
+/**
+ *    搜索建议
+ */
+export function getSuggestion (params) {
+  return request({
+    url: '/suggestion', // 搜索建议地址
+    params // query 中的参数 传入到 params 中
+  })
+}
