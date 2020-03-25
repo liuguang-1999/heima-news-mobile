@@ -26,7 +26,7 @@
               <!-- 时间 用过滤器 处理一下 -->
             <span class="time">{{ item.pubdate | reltime }}</span>&nbsp;
             <!-- 回复数量 -->
-            <van-tag plain @click="openReyply">{{ item.reply_count }} 回复</van-tag>
+            <van-tag plain @click="openReyply(item.com_id.toString())">{{ item.reply_count }} 回复</van-tag>
           </p>
         </div>
       </div>
@@ -40,13 +40,13 @@
     <!-- 评论组件 的评论区弹出框 -->
         <!-- 回复 -->
     <van-action-sheet v-model="showReply" :round="false" class="reply_dialog" title="回复评论">
-      <van-list v-model="reply.loading" :finished="reply.finished" finished-text="没有更多了">
-        <div class="item van-hairline--bottom van-hairline--top" v-for="index in 8" :key="index">
-          <van-image round width="1rem" height="1rem" fit="fill" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+      <van-list @load="getReply" :immediate-check="false" v-model="reply.loading" :finished="reply.finished" finished-text="没有更多了">
+        <div class="item van-hairline--bottom van-hairline--top" v-for="item in reply.list" :key="item.com_id.toString()">
+          <van-image round width="1rem" height="1rem" fit="fill" :src="item.aut_photo" />
           <div class="info">
-            <p><span class="name">一阵清风</span></p>
-            <p>评论的内容，。。。。</p>
-            <p><span class="time">两天内</span></p>
+            <p><span class="name">{{ item.aut_name }}</span></p>
+            <p>{{ item.content }}</p>
+            <p><span class="time">{{ item.pubdate |reltime }}</span></p>
           </div>
         </div>
       </van-list>
@@ -81,7 +81,8 @@ export default {
         loading: false, // 是回复列表组件的状态
         finished: false, // 评论的 评论是否加载完毕
         offset: null, // 偏移量 获取评论的评论的分页依据 c
-        list: [] // 用于存放 当前评论的 评论数据
+        list: [], // 用于存放 当前评论的 评论数据
+        commentId: null // 用来存放评论 id   用这个 id 区查询 这个评论的 评论
       }
     }
   },
@@ -103,7 +104,7 @@ export default {
         // 此时此刻 还没有结数 还需要判断 还有没有 下一页数据
         // ser.end.id === ser.last_id => finished = true
         this.finished = ser.end_id === ser.last_id // 如果 这俩 相等 就为 true 为 true 的话就意味着 没有下一页的数据 能求到了
-        if (!this.finished) {
+        if (!this.finished) { // 如果不等 表示还有下一页的数据
         // 如果还没结束 需要把 ser.last_id 当前页的最后一个 id 给 offset 最后页码变量中
           this.offset = ser.last_id
         }
@@ -112,8 +113,41 @@ export default {
       }
     },
     // 点击按钮 弹出 评论的 回复评论列表 组件
-    openReyply () {
+    openReyply (id) {
+      // 点击按钮 打开 评论 列表
       this.showReply = true
+      // 在弹出面板时候 重置数据
+      this.reply.commentId = id
+      // 弹出窗口之前 把之前的 list 列表给清空
+      this.reply.list = [] // 清空 之前的数据
+      this.reply.offset = null // 因为 希望点击弹出回复面板的时候 是新的数据 从第一页开始
+      this.reply.finished = false // 将 加载状态 开启
+      this.reply.loading = true // 主动打开 加载状态 因为此时没有 主动检查
+      // 打开 弹出面板的时候 去主动调用 评论的评论 获取数据方法
+      this.getReply() // 点击弹出层 调用 获取评论的评论 方法
+    },
+    // 此方法 用来获取 评论的评论
+    // 此方法 会在第一次 时执行 也会在 加载第二页 。。。。 第三页。。。时执行
+    // 获取 评论 的评论数据
+    async getReply () {
+      try {
+        // 发送获取数据的请求
+        const ser = await getComments({
+          type: 'c', // 表示 获取 评论的评论
+          source: this.reply.commentId, // 获取评论的评论
+          offset: this.reply.offset // 当前的偏移量 评论的 评论的分页依据
+        })
+        // 把获取到的数据 追加到我的列表队尾中
+        this.reply.list.push(...ser.results)
+        this.reply.loading = false // 关闭加载状态
+        this.reply.finished = ser.end_id === ser.last_id // 如果 这俩 相等 就为 true 为 true 的话就意味着 没有下一页的数据 能求到了
+        if (!this.reply.finished) { // 如果不等 表示还有下一页的数据
+        // 如果还没结束 需要把 ser.last_id 当前页的最后一个 id 给 offset 最后页码变量中
+          this.reply.offset = ser.last_id
+        }
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 }
