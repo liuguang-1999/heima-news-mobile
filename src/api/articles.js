@@ -71,3 +71,13 @@ export function getComments (params) {
     params // type(是文章的的回复还是回复的回复)  source(来源id)  offset(偏移量 分页依据) 查第二页的数据 传第一页的最后一个id 查第三页的数据  传第二页最后一个id ....
   })
 }
+/**
+ *    封装评论的APi 接口
+ */
+export function commentoReply (data) {
+  return request({
+    url: '/comments', // 请求地址
+    method: 'post', // 请求类型
+    data
+  })
+}

@@ -31,15 +31,18 @@
         </div>
       </div>
     </van-list>
+    <!-- 底部输入框 -->
     <div class="reply-container van-hairline--top">
-      <van-field v-model="value" placeholder="写评论...">
+      <!-- 绑定了 评论内容 不论是 对文章评论 还是对评论回复 都是用的 这个底部输入框 -->
+      <van-field v-model.trim="value" placeholder="写评论...">
         <van-loading v-if="submiting" slot="button" type="spinner" size="16px"></van-loading>
-        <span class="submit" v-else slot="button">提交</span>
+        <span class="submit" v-else slot="button" @click="submit">提交</span>
       </van-field>
     </div>
     <!-- 评论组件 的评论区弹出框 -->
         <!-- 回复 -->
-    <van-action-sheet v-model="showReply" :round="false" class="reply_dialog" title="回复评论">
+        <!-- 关闭 评论是 评论id 设置为空 closed -->
+    <van-action-sheet @closed="reply.commentId = null" v-model="showReply" :round="false" class="reply_dialog" title="回复评论">
       <van-list @load="getReply" :immediate-check="false" v-model="reply.loading" :finished="reply.finished" finished-text="没有更多了">
         <div class="item van-hairline--bottom van-hairline--top" v-for="item in reply.list" :key="item.com_id.toString()">
           <van-image round width="1rem" height="1rem" fit="fill" :src="item.aut_photo" />
@@ -57,7 +60,7 @@
 </template>
 
 <script>
-import { getComments } from '@/api/articles'
+import { getComments, commentoReply } from '@/api/articles'
 export default {
   data () {
     return {
@@ -87,6 +90,58 @@ export default {
     }
   },
   methods: {
+    // 点击按钮提交评论
+    async submit () {
+      try {
+      // 点击按钮后 需要判断一下 用户是否登录 如果没登陆的话 不允许评论 登陆了才可以往下 进行
+      // 可以利用 Vuex 里面的 token 进行判断 用户是否登录 如果没登录就让用户去登陆
+        if (this.$store.state.user.token) {
+        // 成立的话 才认为当前用户登录了 若果登陆了 还需要判断 是否有评论的内容
+        // 如果没有评论内容 直接返回
+          if (!this.value) return false// 如果没有评论内容 直接拦截代码执行
+          this.submiting = true // 把按钮 的加载状态 打开 表示正在提交中 这样的话 可以避免 重复提交 只有提交完毕 后方可关闭 加载状态
+          try {
+            const ser = await commentoReply({
+              target: this.reply.commentId ? this.reply.commentId : this.$route.query.artId, // 表示 要么是文章的 id 要么是 回复评论的 id  这就要 根据 你当前是对谁 进行评论
+              content: this.value, // 传入 评论的内容
+              art_id: this.reply.commentId ? this.$route.query.artId : null// 如果是对评论进行评论 需要传该评论属于哪个文章 如果是对文章进行评论 就不用传入这个参数
+            }) // 提交数据 方法
+            // ser.new_obj // 此 obj 是添加成功后的一条数据 词条数据需要追加到 评论列表
+            // 有两个场景 对文章进行评论 对评论 进行回复
+            if (this.reply.commentId) {
+              setTimeout(() => {
+                // 如果有 id 的话 就是对 评论进行 回复
+                this.reply.list.unshift(ser.new_obj)
+                // 如果是对评论 进行回复 那就需要 找到对应的评论 id 将评论 id 的回复数+1
+                const comment = this.comments.find(item => item.com_id.toString() === this.reply.commentId)
+                comment && comment.reply_count++ // 找到了 回复的显示数字的话 就递增 加1
+                this.submiting = false // 按钮的加载状态关闭
+                this.value = '' // 清空 评论框内的内容
+              }, 200)
+            } else {
+              setTimeout(() => {
+                // 如果没 id 的话 就是对文章进行评论
+                this.comments.unshift(ser.new_obj)
+                this.submiting = false // 按钮的加载状态关闭
+                this.value = '' // 清空 评论框内的内容
+              }, 200)
+            }
+          } catch (error) {
+            this.$notify({ message: '评论失败', duration: 800 })
+          }
+        } else {
+        // 否则 认为 用户没有登录
+        // 没登陆的情况下 去告知用户 去登录 登陆后 才可以进行评论
+          await this.$dialog.confirm({
+            message: '当前还没有登陆,请登陆'
+          })
+          // 如果用户点击了确定 需要跳转到登陆页面
+          this.$router.push({ path: '/login', query: { redirectUrl: this.$route.fullPath } }) // 登录成功之后需要回到 当前页
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
     // 下拉加载方法 当滚动条距离底部 超过一定限制的时候 触发这个方法
     async onLoad () {
       try {
