@@ -40,13 +40,14 @@
       <van-cell icon="edit" title="编辑资料" to="/user/profile" is-link />
       <van-cell icon="chat-o" title="小智同学" to="/user/chat" is-link />
       <van-cell icon="setting-o" title="系统设置" is-link />
-      <van-cell icon="warning-o" title="退出登录" to="/login" is-link />
+      <van-cell icon="warning-o" title="退出登录" is-link @click="lgout" />
     </van-cell-group>
   </div>
 </template>
 
 <script>
 import { getuserInfo } from '@/api/user'
+import { mapMutations } from 'vuex' // 引入 删除 token 的方法
 export default {
   data () {
     return {
@@ -54,8 +55,20 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['deldataUser']), // 释放 删除 token 的方法
+    // 获取个人 用户信息 功能
     async getuserInfo () {
       this.userInfo = await getuserInfo()
+    },
+    // 退出登录 功能
+    async lgout () {
+      await this.$dialog.confirm({
+        message: '您确定要退出登陆吗？'
+      })
+      // 点击了确定 退出后 删除 本地的 token 使用删除 token 的方法
+      this.deldataUser()
+      // 删除 token 后跳转到登录页面
+      this.$router.push('/login')
     }
   },
   created () {
