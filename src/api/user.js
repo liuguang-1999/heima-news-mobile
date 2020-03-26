@@ -32,3 +32,11 @@ export function unfollowUser (id) {
     method: 'DELETE' // 取消 关注接口类型
   })
 }
+/**
+ *    获取用户的 个人资料
+ */
+export function getuserInfo () {
+  return request({
+    url: '/user'
+  })
+}
