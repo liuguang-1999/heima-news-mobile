@@ -10,12 +10,12 @@
           height="1.5rem"
           fit="cover"
           round
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
+          :src="user.photo"
         />
       </van-cell>
       <van-cell is-link title="名称" :value="user.name" @click="showName = true" />
-      <van-cell is-link title="性别" value="男" />
-      <van-cell is-link title="生日" value="2019-08-08" />
+      <van-cell is-link title="性别" :value="user.gender === 0 ? '男' :'女'" @click="showGender = true" />
+      <van-cell is-link title="生日" :value="user.birthday" @click="showDate" />
     </van-cell-group>
     <!-- 放置头像弹层组件 -->
     <van-popup v-model="showPhoto" style="width:80%">
@@ -33,7 +33,8 @@
       <van-button type="info" size="large" block @click="btnName">确定</van-button>
     </van-popup>
     <!-- 放置性别弹层 -->
-    <van-action-sheet :actions="actions" v-model="showGender" cancel-text="取消"></van-action-sheet>
+    <!-- 注册弹层的选择事件 -->
+    <van-action-sheet @select="selectItem" :actions="actions" v-model="showGender" cancel-text="取消"></van-action-sheet>
     <!-- 放置生日弹层 -->
     <van-popup v-model="showBirthDay" position="bottom">
       <!-- 选择出生日期  出生日期应该小于现在时间-->
@@ -43,12 +44,16 @@
         type="date"
         :min-date="minDate"
         :max-date="maxDate"
+         @cancel="showBirthDay=false"
+         @confirm="confirmDate"
       />
     </van-popup>
   </div>
 </template>
 
 <script>
+import { getUserprofile } from '@/api/user'
+import dayjs from 'dayjs'
 export default {
   data () {
     return {
@@ -65,11 +70,14 @@ export default {
         // 专门 放置 个人资料
         name: '', // 用户昵称
         gender: 1, // 0男 1 女
-        birthday: '' // 给一个默认生日
+        birthday: '1999-4-9' // 给一个默认生日
       }
     }
   },
   methods: {
+    async getUserprofile () {
+      this.user = await getUserprofile()
+    },
     btnName () {
       if (this.user.name.length < 1 || this.user.name.length > 7) {
         this.nameMsg = '用户昵称的长度应该是1-7的长度要求'
@@ -78,7 +86,29 @@ export default {
       this.nameMsg = '' // 将错误信息 清空
       // 关闭弹层
       this.showName = false // 关闭 弹层
+    },
+    // 性别 弹层 事件方法
+    selectItem (item, index) {
+      this.user.gender = index // index 是 选择性别 的代号 0 男 1 女
+      this.showGender = false // 手动关闭弹层
+    },
+    // 显示 生日 弹层
+    showDate () {
+    // 打开生日 弹层
+      this.showBirthDay = true
+      // 将当前的生日 设置到 选择日期的当前时间  将生日字符串转化为 date 对象 绑定到日期组件上面
+      this.currentDate = new Date(this.user.birthday)
+    },
+    // 确定生日 日期
+    confirmDate () {
+      //  当前选择的生日 其实就是 currenDate
+      // 拿到选择的日期  设置给生日  => date  => 字符串
+      this.user.birthday = dayjs(this.currentDate).format('YYYY-MM-DD') // 将date类型转化成字符串
+      this.showBirthDay = false // 关闭弹层
     }
+  },
+  created () {
+    this.getUserprofile()
   }
 }
 </script>

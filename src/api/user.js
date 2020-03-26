@@ -40,3 +40,11 @@ export function getuserInfo () {
     url: '/user'
   })
 }
+/**
+ *    获取个人用户资料
+ */
+export function getUserprofile () {
+  return request({
+    url: '/user/profile' // 获取用户个人资料的 接口地址
+  })
+}
