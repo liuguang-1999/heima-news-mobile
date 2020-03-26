@@ -11,6 +11,7 @@
           fit="cover"
           round
           :src="user.photo"
+          @click="showPhoto=true"
         />
       </van-cell>
       <van-cell is-link title="名称" :value="user.name" @click="showName = true" />
@@ -22,7 +23,7 @@
       <!-- 内容 -->
       <!-- 1 本地相册选择图片 -->
       <!-- 2 拍照 -->
-      <van-cell is-link title="本地相册选择图片"></van-cell>
+      <van-cell is-link title="本地相册选择图片" @click="openFileDialog"></van-cell>
       <van-cell is-link title="拍照"></van-cell>
     </van-popup>
     <!-- 放置昵称弹层 -->
@@ -48,11 +49,15 @@
          @confirm="confirmDate"
       />
     </van-popup>
+     <!-- 放置一个input:file 标签 用来上传图片  不能让人看到 隐藏掉 -->
+    <!-- vue中 可以通过 ref获取对象 -->
+    <!-- 如果选择了文件 就会触发input change事件 -->
+    <input @change="upload" ref="myFile" type="file" style="display:none" name="" id="">
   </div>
 </template>
 
 <script>
-import { getUserprofile } from '@/api/user'
+import { getUserprofile, updatePhoto } from '@/api/user'
 import dayjs from 'dayjs'
 export default {
   data () {
@@ -70,11 +75,25 @@ export default {
         // 专门 放置 个人资料
         name: '', // 用户昵称
         gender: 1, // 0男 1 女
-        birthday: '1999-4-9' // 给一个默认生日
+        birthday: '1999-4-9', // 给一个默认生日
+        photo: '' // 用户 头像
       }
     }
   },
   methods: {
+    // 修改头像
+    async upload (params) {
+    //   如果选择了文件 就会触发input 文件上传
+      const data = new FormData()
+      data.append('photo', this.$refs.myFile.files[0]) // 第一个参数 名称  第二个参数 图片文件
+      const ser = await updatePhoto(data) // 上传头像
+      this.showPhoto = false // 关闭头像弹层
+      this.user.photo = ser.photo
+    },
+    // 打开选择文件的对话框
+    openFileDialog () {
+      this.$refs.myFile.click() // 触发input:file的click事件 触发事件就会弹出文件对话框
+    },
     async getUserprofile () {
       this.user = await getUserprofile()
     },

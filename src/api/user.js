@@ -48,3 +48,13 @@ export function getUserprofile () {
     url: '/user/profile' // 获取用户个人资料的 接口地址
   })
 }
+/**
+ *    修改用户 头像
+ */
+export function updatePhoto (data) {
+  return request({
+    url: '/user/photo', // 修改用户 头像 接口
+    data, // 参数
+    method: 'patch'
+  })
+}
