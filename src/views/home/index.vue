@@ -3,7 +3,8 @@
     <!-- 主页 -->
     <!-- 顶部 标签页 -->
     <!-- activeIndex 默认绑定激活页签 -->
-    <van-tabs  v-model="activeIndex">
+    <!-- 监听 切换页的 改变事件 -->
+    <van-tabs  v-model="activeIndex" @change="changeTab">
       <!-- 内部标签 -->
       <van-tab :title=" item.name " v-for="item in channels" :key="item.id">
         <!-- 单元格 -->
@@ -61,6 +62,12 @@ export default {
     }
   },
   methods: {
+    //  广播 切换标签页 的方法
+    changeTab () {
+      // 切换也前时 广播一个消息 让我的组件实例去 滚动 滚动条之前的位置
+      // 广播中 传出参数数据 当前激活的 激活页签索引  的 id
+      eventBus.$emit('changeTab', this.channels[this.activeIndex].id)
+    },
     // 添加频道的方法
     async addChannel (channel) {
       // 调用 API 并写入缓存 成功后要将该 频道 push 到 channels 里面

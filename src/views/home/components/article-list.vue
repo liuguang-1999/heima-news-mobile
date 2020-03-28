@@ -2,7 +2,8 @@
   <!-- 文章列表 组件  放置文章列表-->
   <!-- 上拉加载 -->
   <!-- 放置这个div的目的是 形成滚动条 为后期的阅读记忆 埋伏笔 -->
-  <div class="scroll-wrapper">
+  <!-- 注册滚动条事件 定义方法 -->
+  <div class="scroll-wrapper" @scroll="remember" ref="myScroll">
     <!--  下拉刷新 组件 这个组件包含了 上拉加载 组件  -->
     <van-pull-refresh @refresh="onrefresh" v-model="isLoading" :success-text="successText">
       <van-list v-model="uploading" :finished="finished" @load="onLoad" finished-text="数据加载完毕">
@@ -82,6 +83,23 @@ export default {
         }
       }
     })
+    eventBus.$on('changeTab', (id) => {
+      // 传入过来的 id 就是当前被激活的id
+      // 判断 当前的文章列表  接收到的id 是否等于此id 如果相等 表示 该文章列表的实例 就是需要去滚动的 实例
+      // 一个 tab页 一个实例
+      if (id === this.channel_id) {
+        // 此时 代码 测试没有实现理想效果 因为 标签页切换事件 执行之后 article-list 组件渲染 是异步执行的 没有办法立刻得出渲染 结果
+        // 此时获取不到 this.$refs.myScroll
+        // 利用 this.$nextTick() 方法 因为Vue是异步渲染 如果想要等待上一次的结果 渲染完成 可以在 this.$nextTick() 中去处理
+        this.$nextTick(() => {
+          // 如果此 判断成立 就表示 我要滚动 当前页的滚动条
+          if (this.scrollTop && this.$refs.myScroll) {
+            // 当前滚动条距离不为0 并且 滚动元素 存在的情况下 再去滚动 当前的滚动条
+            this.$refs.myScroll.scrollTop = this.scrollTop // 滚动到 原来的固定位置
+          }
+        })
+      }
+    })
   },
   // 计算属性
   computed: {
@@ -106,10 +124,20 @@ export default {
       finished: false, // 当前列表的  全部数据 是否加载完毕
       isLoading: false, // 下拉刷新加载 是否完成
       successText: '', // 下拉刷新 成功提示信息
-      timestamp: null // 定义一个时间戳属性 用来存储 上一个历史时间戳 初始化是没有 历史时间戳的 所以给一个空
+      timestamp: null, // 定义一个时间戳属性 用来存储 上一个历史时间戳 初始化是没有 历史时间戳的 所以给一个空
+      scrollTop: 0 // 定义 阅读记忆的滚动高度
     }
   },
   methods: {
+    // 滚动条事件 阅读记忆 加载 记录滚动条 滚动的 高度
+    remember (event) {
+      // 使用函数的防抖 开控制事件 触发的频率
+      clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
+        // 记录当前 滚动条滚动的位置
+        this.scrollTop = event.srcElement.scrollTop // 记录当前滚动条的 滚动高度的位置
+      }, 500)
+    },
     // 上拉加载
     async onLoad () {
       // 开始加载 文章列表数据
@@ -173,6 +201,14 @@ export default {
       //   this.isLoading = false // 手动关闭 下拉加载状态
       //   this.successText = `刷新成功添加了${arr.length}条信息` // 下拉刷新 成功后提示信息文本
       // }, 800)
+    }
+  },
+  // 激活函数 - 激活正在休眠的组件实例
+  activated () {
+    if (this.$refs.myScroll && this.scrollTop) {
+      // 判断 我当前的滚动条高度位置手是否大于0
+      // 将 div的 滚动条回到 原理啊的位置
+      this.$refs.myScroll.scrollTop = this.scrollTop // 将记录的滚动位置 回到原来的滚动位置
     }
   }
 }

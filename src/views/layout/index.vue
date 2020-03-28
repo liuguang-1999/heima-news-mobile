@@ -4,7 +4,11 @@
     <!-- 当页面地址是 /user的时候 该把顶部导航栏 给隐藏掉 不是/user就不隐藏 -->
     <van-nav-bar title="标题" left-arrow right-text="搜索" fixed v-if="$route.path !== '/user'" @click-right="$router.push('/search')"></van-nav-bar>
     <div class="my-wrapper" :class="{noTop:$route.path==='/user'}">
+    <!-- 二级路由容器 -->
+    <!-- 对二级路由容器 进行缓存 直接使用 keep-alive Vue.js 自带组件 包裹容器 -->
+    <keep-alive>
       <router-view></router-view>
+    </keep-alive>
     </div>
     <!-- 导航底部组件 route 开启导航的路由模式 -->
     <van-tabbar route>
