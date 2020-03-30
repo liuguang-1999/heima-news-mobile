@@ -17,5 +17,15 @@ module.exports = {
         }
       }
     }
-  }
+  },
+  // config 参数就是 当前 vue-cli 项目所有的 webpack 配置参数
+  // 如果想要改动 直接修改这个信息就可以了
+  // 首先要判断 一下 当前打包环境 是 开发环境 还是生产环境
+  configureWebpack: (config) => {
+    if (process.env.NODE_ENV === 'production') {
+      // 只需要在 生产环境中 把所有的 console 删除掉 在打包 删除的 console 不是删除源代码的 console 而是删除了 编译之后的 console
+      config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
+    }
+  },
+  publicPath: './' // 打包后的 文件引用地址
 }
